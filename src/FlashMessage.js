@@ -179,7 +179,6 @@ export const DefaultFlash = ({
                                icon,
                                hideStatusBar = false,
                                onPress,
-                               actionLabel,
                                ...props
                              }) => {
   const hasDescription = !!message.description && message.description !== "";
@@ -196,7 +195,7 @@ export const DefaultFlash = ({
   const actionButton = position !== "center" ? (
     <TouchableOpacity style={styles.defaultFlashAction} onPress={onPress}>
       <Text style={[styles.flashText, titleStyle]}>
-        {actionLabel}
+        {message.label || "OKAY"}
       </Text>
     </TouchableOpacity>
   ) : null;
@@ -336,7 +335,6 @@ export default class FlashMessage extends Component {
      * The `MessageComponent` prop set the default flash message render component used to show all the messages
      */
     MessageComponent: DefaultFlash,
-    actionLabel: "OKAY",
   };
   static propTypes = {
     canRegisterAsDefault: PropTypes.bool,
@@ -356,7 +354,6 @@ export default class FlashMessage extends Component {
     renderFlashMessageIcon: PropTypes.func,
     transitionConfig: PropTypes.func,
     MessageComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
-    actionLabel: PropTypes.string,
   };
   /**
    * Your can customize the default ColorTheme of this component
@@ -540,7 +537,7 @@ export default class FlashMessage extends Component {
     this.toggleVisibility(false, animated);
   }
   render() {
-    const { renderFlashMessageIcon, renderCustomContent, MessageComponent, actionLabel } = this.props;
+    const { renderFlashMessageIcon, renderCustomContent, MessageComponent } = this.props;
     const { message, visibleValue } = this.state;
 
     const style = this.prop(message, "style");
@@ -574,7 +571,6 @@ export default class FlashMessage extends Component {
             textStyle={textStyle}
             titleStyle={titleStyle}
             onPress={this.pressMessage}
-            actionLabel={actionLabel}
           />
         )}
       </Animated.View>
