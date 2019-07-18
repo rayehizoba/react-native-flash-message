@@ -168,20 +168,20 @@ export const renderFlashMessageIcon = (icon = "success", style = {}, customProps
  * For most of uses this component doesn't need to be change for custom versions, cause it's very customizable
  */
 export const DefaultFlash = ({
-  message,
-  style,
-  textStyle,
-  titleStyle,
-  renderFlashMessageIcon,
-  position = "top",
-  renderCustomContent,
-  floating = false,
-  icon,
-  hideStatusBar = false,
-  onPress,
-  actionLabel,
-  ...props
-}) => {
+                               message,
+                               style,
+                               textStyle,
+                               titleStyle,
+                               renderFlashMessageIcon,
+                               position = "top",
+                               renderCustomContent,
+                               floating = false,
+                               icon,
+                               hideStatusBar = false,
+                               onPress,
+                               actionLabel,
+                               ...props
+                             }) => {
   const hasDescription = !!message.description && message.description !== "";
   const iconView =
     !!icon &&
@@ -195,7 +195,7 @@ export const DefaultFlash = ({
 
   const actionButton = position !== "center" ? (
     <TouchableOpacity style={styles.defaultFlashAction} onPress={onPress}>
-      <Text style={styles.flashText}>
+      <Text style={[styles.flashText, titleStyle]}>
         {actionLabel}
       </Text>
     </TouchableOpacity>
@@ -214,9 +214,9 @@ export const DefaultFlash = ({
               !!message.backgroundColor
                 ? { backgroundColor: message.backgroundColor }
                 : !!message.type &&
-                  !!FlashMessage.ColorTheme[message.type] && {
-                    backgroundColor: FlashMessage.ColorTheme[message.type],
-                  },
+                !!FlashMessage.ColorTheme[message.type] && {
+                  backgroundColor: FlashMessage.ColorTheme[message.type],
+                },
               style,
             ],
             wrapperInset,
@@ -224,7 +224,7 @@ export const DefaultFlash = ({
             position !== "center" && floating ? "margin" : "padding"
           )}
           {...props}>
-          <View style={{flexDirection: "row"}}>
+          <View style={{flexDirection: "row", flex: 1}}>
             {hasIcon && icon.position === "left" && iconView}
             <View style={styles.flashLabel}>
               <Text
