@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, TouchableWithoutFeedback, Platform, StatusBar, Animated, Image, Text, View } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Platform, StatusBar, Animated, Image, Text, View } from "react-native";
 import { isIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper";
 import PropTypes from "prop-types";
 
@@ -178,6 +178,8 @@ export const DefaultFlash = ({
   floating = false,
   icon,
   hideStatusBar = false,
+  onPress,
+  actionLabel,
   ...props
 }) => {
   const hasDescription = !!message.description && message.description !== "";
@@ -190,6 +192,14 @@ export const DefaultFlash = ({
       icon.style,
     ]);
   const hasIcon = !!iconView;
+
+  const actionButton = position !== "center" ? (
+    <TouchableOpacity style={styles.defaultFlashAction} onPress={onPress}>
+      <Text style={styles.flashText}>
+        {actionLabel}
+      </Text>
+    </TouchableOpacity>
+  ) : null;
 
   return (
     <FlashMessageWrapper position={typeof position === "string" ? position : null}>
@@ -214,25 +224,28 @@ export const DefaultFlash = ({
             position !== "center" && floating ? "margin" : "padding"
           )}
           {...props}>
-          {hasIcon && icon.position === "left" && iconView}
-          <View style={styles.flashLabel}>
-            <Text
-              style={[
-                styles.flashText,
-                hasDescription && styles.flashTitle,
-                !!message.color && { color: message.color },
-                titleStyle,
-              ]}>
-              {message.message}
-            </Text>
-            {!!renderCustomContent && renderCustomContent()}
-            {hasDescription && (
-              <Text style={[styles.flashText, !!message.color && { color: message.color }, textStyle]}>
-                {message.description}
+          <View style={{flexDirection: "row"}}>
+            {hasIcon && icon.position === "left" && iconView}
+            <View style={styles.flashLabel}>
+              <Text
+                style={[
+                  styles.flashText,
+                  hasDescription && styles.flashTitle,
+                  !!message.color && { color: message.color },
+                  titleStyle,
+                ]}>
+                {message.message}
               </Text>
-            )}
+              {!!renderCustomContent && renderCustomContent()}
+              {hasDescription && (
+                <Text style={[styles.flashText, !!message.color && { color: message.color }, textStyle]}>
+                  {message.description}
+                </Text>
+              )}
+            </View>
+            {hasIcon && icon.position === "right" && iconView}
           </View>
-          {hasIcon && icon.position === "right" && iconView}
+          {actionButton}
         </View>
       )}
     </FlashMessageWrapper>
@@ -323,6 +336,7 @@ export default class FlashMessage extends Component {
      * The `MessageComponent` prop set the default flash message render component used to show all the messages
      */
     MessageComponent: DefaultFlash,
+    actionLabel: "OKAY",
   };
   static propTypes = {
     canRegisterAsDefault: PropTypes.bool,
@@ -342,6 +356,7 @@ export default class FlashMessage extends Component {
     renderFlashMessageIcon: PropTypes.func,
     transitionConfig: PropTypes.func,
     MessageComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+    actionLabel: PropTypes.string,
   };
   /**
    * Your can customize the default ColorTheme of this component
@@ -525,7 +540,7 @@ export default class FlashMessage extends Component {
     this.toggleVisibility(false, animated);
   }
   render() {
-    const { renderFlashMessageIcon, renderCustomContent, MessageComponent } = this.props;
+    const { renderFlashMessageIcon, renderCustomContent, MessageComponent, actionLabel } = this.props;
     const { message, visibleValue } = this.state;
 
     const style = this.prop(message, "style");
@@ -547,20 +562,20 @@ export default class FlashMessage extends Component {
           animStyle,
         ]}>
         {!!message && (
-          <TouchableWithoutFeedback onPress={this.pressMessage}>
-            <MessageComponent
-              position={position}
-              floating={floating}
-              message={message}
-              hideStatusBar={hideStatusBar}
-              renderFlashMessageIcon={renderFlashMessageIcon}
-              renderCustomContent={renderCustomContent}
-              icon={icon}
-              style={style}
-              textStyle={textStyle}
-              titleStyle={titleStyle}
-            />
-          </TouchableWithoutFeedback>
+          <MessageComponent
+            position={position}
+            floating={floating}
+            message={message}
+            hideStatusBar={hideStatusBar}
+            renderFlashMessageIcon={renderFlashMessageIcon}
+            renderCustomContent={renderCustomContent}
+            icon={icon}
+            style={style}
+            textStyle={textStyle}
+            titleStyle={titleStyle}
+            onPress={this.pressMessage}
+            actionLabel={actionLabel}
+          />
         )}
       </Animated.View>
     );
@@ -592,11 +607,15 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   defaultFlash: {
-    justifyContent: "flex-start",
-    paddingVertical: 15,
+    justifyContent: "space-between",
+    paddingVertical: 20,
     paddingHorizontal: 20,
     backgroundColor: "#696969",
     minHeight: OFFSET_HEIGHT,
+    flexDirection: "row",
+  },
+  defaultFlashAction: {
+    alignSelf: "center",
   },
   defaultFlashCenter: {
     margin: 44,
