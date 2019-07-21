@@ -612,6 +612,7 @@ const styles = StyleSheet.create({
   },
   defaultFlashAction: {
     alignSelf: "center",
+    marginLeft: 20,
   },
   defaultFlashCenter: {
     margin: 44,
